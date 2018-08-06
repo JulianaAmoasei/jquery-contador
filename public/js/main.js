@@ -7,6 +7,11 @@ $(function(){
     inicializaCronometro();
     inicializaMarcadores();
     $("#botao-reiniciar").click(reiniciaJogo);
+    atualizaPlacar();
+    $("#usuarios").selectize({
+        create: true,
+        sortField: 'text'
+    });
 });
 
 function atualizaTamanhoFrase(){
@@ -14,6 +19,11 @@ function atualizaTamanhoFrase(){
     var numPalavras  = frase.split(" ").length;
     var tamanhoFrase = $("#tamanho-frase");
     tamanhoFrase.text(numPalavras);
+}
+
+function atualizaTempoInicial(tempo) {
+    tempoInicial = tempo;
+    $("#tempo-digitacao").text(tempo);
 }
 
 function inicializaContadores() {
@@ -29,8 +39,8 @@ function inicializaContadores() {
 }
 
 function inicializaCronometro() {
-    var tempoRestante = $("#tempo-digitacao").text();
     campo.one("focus", function() {
+        var tempoRestante = $("#tempo-digitacao").text();
         $("#botao-reiniciar").attr("disabled",true);
         var cronometroID = setInterval(function() {
             tempoRestante--;
@@ -47,17 +57,25 @@ function inicializaCronometro() {
 }   
 
 function inicializaMarcadores() {
-    var frase = $(".frase").text();
     campo.on("input", function() {
+        var frase = $(".frase").text();
         var digitado = campo.val();
         var comparavel = frase.substr(0 , digitado.length);
 
         if( frase.startsWith(digitado)) {
             campo.addClass("borda-verde");
+            campo.removeClass("borda-vermelha");
         } else {
             campo.addClass("borda-vermelha");
+            campo.removeClass("borda-verde");
         }
     });
+}
+
+function finalizaJogo() {
+    campo.attr("disabled", true);
+    campo.toggleClass("campo-desativado");
+    inserePlacar();
 }
 
 function reiniciaJogo(){
@@ -103,16 +121,4 @@ function novaLinha(usuario,palavras){
 function removeLinha(event){
     event.preventDefault();
     $(this).parent().parent().remove();
-}
-
-
-$("#botao-placar").click(mostraPlacar);
-
-
-function mostraPlacar() {
-    // $(".placar").css("display", "block");
-    // $(".placar").show();
-    // $(".placar").hide();
-    // $(".placar").toggle();
-    $(".placar").stop().slideToggle(600);
 }
